@@ -12,7 +12,9 @@ func UserPath(e *echo.Echo, uc *controllers.UserController) {
 	e.GET("/user/:user_id", uc.GetUserById)
 	e.GET("/users", uc.GetAllUser)
 	e.DELETE("/user", uc.DeleteUser, middlewares.JWTMiddleware())
-	// e.PUT("/user", uc.UpdateUser, middlewares.JWTMiddleware())
-	e.PUT("/user/:user_id", uc.UpdateUser)
+	e.PUT("/user", uc.UpdateUser, middlewares.JWTMiddleware())
+}
 
+func LoginAuth(e *echo.Echo, ac *controllers.AuthController) {
+	e.POST("/login", ac.Login)
 }

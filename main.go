@@ -19,8 +19,13 @@ func main() {
 	userService := services.NewUserService(userRepository)
 	userController := controllers.NewUserController(userService)
 
+	authRepository := repositories.NewAuthRepository(db)
+	authService := services.NewAuthService(authRepository)
+	authController := controllers.NewAuthController(authService)
+
 	e := echo.New()
 	routes.UserPath(e, userController)
+	routes.LoginAuth(e, authController)
 
 	log.Fatal(e.Start(":9090"))
 }
