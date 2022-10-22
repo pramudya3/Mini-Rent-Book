@@ -65,7 +65,7 @@ func (uc *UserController) GetAllUser(c echo.Context) error {
 }
 
 func (uc *UserController) DeleteUser(c echo.Context) error {
-	// get id user from token
+	// mendapatkan userId dari token
 	idToken, errToken := middlewares.ExtractToken(c)
 	if errToken != nil {
 		return c.JSON(http.StatusUnauthorized, helpers.APIResponseFailed("unauthorized"))
@@ -81,16 +81,10 @@ func (uc *UserController) DeleteUser(c echo.Context) error {
 }
 
 func (uc *UserController) UpdateUser(c echo.Context) error {
-	// get user_id from token
-	// idToken, errToken := middlewares.ExtractToken(c)
-	// if errToken != nil {
-	// 	return c.JSON(http.StatusUnauthorized, helpers.APIResponseFailed("unauthorized"))
-	// }
-
-	idString := c.Param("user_id")
-	id, errId := strconv.Atoi(idString)
-	if errId != nil {
-		return c.JSON(http.StatusInternalServerError, helpers.APIResponseFailed("id not recognise"))
+	// mendapatkan userId dari token
+	idToken, errToken := middlewares.ExtractToken(c)
+	if errToken != nil {
+		return c.JSON(http.StatusUnauthorized, helpers.APIResponseFailed("unauthorized"))
 	}
 
 	var updateUser models.UpdateRequest
@@ -100,7 +94,7 @@ func (uc *UserController) UpdateUser(c echo.Context) error {
 	}
 
 	ctx := c.Request().Context()
-	user, err := uc.userService.UpdateUser(ctx, updateUser, id)
+	user, err := uc.userService.UpdateUser(ctx, updateUser, idToken)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, helpers.APIResponseFailed(err.Error()))
 	}
