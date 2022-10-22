@@ -5,6 +5,7 @@ import (
 	"errors"
 	"rent-book/models"
 	"rent-book/repositories"
+	"time"
 )
 
 type UserServiceInterface interface {
@@ -12,7 +13,7 @@ type UserServiceInterface interface {
 	GetUserById(ctx context.Context, userId int) (models.UserResponse, error)
 	GetAllUser(ctx context.Context) ([]models.UserResponse, error)
 	DeleteUser(ctx context.Context, idToken int) error
-	UpdateUser(ctx context.Context, updateUser models.NewUserRequest) (models.UserResponse, error)
+	UpdateUser(ctx context.Context, updateUser models.UpdateRequest, idToken int) (models.UserResponse, error)
 }
 
 type UserService struct {
@@ -73,7 +74,7 @@ func (us *UserService) DeleteUser(ctx context.Context, idToken int) error {
 	return err
 }
 
-func (us *UserService) UpdateUser(ctx context.Context, updateUser models.NewUserRequest, idToken int) (models.UserResponse, error) {
+func (us *UserService) UpdateUser(ctx context.Context, updateUser models.UpdateRequest, idToken int) (models.UserResponse, error) {
 	getUser, err := us.userRepository.GetUserById(ctx, idToken)
 	if err != nil {
 		return models.UserResponse{}, err
@@ -99,14 +100,24 @@ func (us *UserService) UpdateUser(ctx context.Context, updateUser models.NewUser
 		getUser.Address = updateUser.Address
 	}
 
+	// membuat format waktu untuk Updated_At
+	layoutFormat := "2006-01-02T15:04:05"
+	value := time.Now().Local().Format(layoutFormat)
+
+	now, _ := time.Parse(layoutFormat, value)
+	getUser.UpdatedAt = &now
+
 	user, err := us.userRepository.UpdateUser(ctx, getUser, idToken)
 
+	// untuk menampilkan response update
 	responseUpdate := models.UserResponse{
 		UserId:      getUser.UserId,
 		Name:        user.Name,
 		Email:       user.Email,
 		PhoneNumber: user.PhoneNumber,
 		Address:     user.Address,
+		CreatedAt:   user.CreatedAt,
+		UpdatedAt:   user.UpdatedAt,
 	}
 	return responseUpdate, err
 }

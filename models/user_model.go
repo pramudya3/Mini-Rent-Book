@@ -14,11 +14,12 @@ type User struct {
 }
 
 type NewUserRequest struct {
-	Name        string `json:"name" db:"name"`
-	Email       string `json:"email" db:"email"`
-	Password    string `json:"password" db:"password"`
-	PhoneNumber string `json:"phone_number" db:"phone_number"`
-	Address     string `json:"address" db:"address"`
+	Name        string    `json:"name" db:"name"`
+	Email       string    `json:"email" db:"email"`
+	Password    string    `json:"password" db:"password"`
+	PhoneNumber string    `json:"phone_number" db:"phone_number"`
+	Address     string    `json:"address" db:"address"`
+	CreatedAt   time.Time `json:"created_at" db:"created_at"`
 }
 
 type UserResponse struct {
@@ -27,8 +28,17 @@ type UserResponse struct {
 	Email       string     `json:"email" db:"email"`
 	PhoneNumber string     `json:"phone_number" db:"phone_number"`
 	Address     string     `json:"address" db:"address"`
-	CreatedAt   time.Time  `json:"createdAt" db:"createdAt"`
+	CreatedAt   time.Time  `json:"created_at" db:"created_at"`
 	UpdatedAt   *time.Time `json:"updatedAt" db:"updatedAt"`
+}
+
+type UpdateRequest struct {
+	Name        string    `json:"name" db:"name"`
+	Email       string    `json:"email" db:"email"`
+	Password    string    `json:"password" db:"password"`
+	PhoneNumber string    `json:"phone_number" db:"phone_number"`
+	Address     string    `json:"address" db:"address"`
+	UpdatedAt   time.Time `json:"updatedAt" db:"updatedAt"`
 }
 
 type Login struct {
