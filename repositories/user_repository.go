@@ -93,7 +93,7 @@ func (ur *UserRepository) DeleteUser(ctx context.Context, idToken int) error {
 func (ur *UserRepository) UpdateUser(ctx context.Context, updateUser models.User, idToken int) (models.User, error) {
 	query := "UPDATE users SET name = ?, email = ?, password = ?, phone_number = ?, address = ?, updated_at = ? WHERE userId = ?"
 
-	result, err := ur.mysql.ExecContext(ctx, query, updateUser.Name, updateUser.Email, updateUser.Password, updateUser.PhoneNumber, updateUser.Address, updateUser.UpdatedAt, updateUser.UserId)
+	result, err := ur.mysql.ExecContext(ctx, query, updateUser.Name, updateUser.Email, updateUser.Password, updateUser.PhoneNumber, updateUser.Address, updateUser.UpdatedAt, idToken)
 	if err != nil {
 		return models.User{}, err
 	}
