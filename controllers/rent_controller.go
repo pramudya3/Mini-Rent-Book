@@ -6,7 +6,6 @@ import (
 	"rent-book/middlewares"
 	"rent-book/models"
 	"rent-book/services"
-	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
@@ -40,16 +39,20 @@ func (rc *RentController) NewRent(c echo.Context) error {
 	return c.JSON(http.StatusOK, helpers.APIResponseSuccessWithoutData("success add new rent"))
 }
 
-func (rc *RentController) GetRentById(c echo.Context) error {
+func (rc *RentController) GetRentByLogin(c echo.Context) error {
+	idToken, errToken := middlewares.ExtractToken(c)
+	if errToken != nil {
+		return c.JSON(http.StatusUnauthorized, helpers.APIResponseFailed("Unauthorized"))
+	}
 
-	idString := c.Param("id")
-	id, err := strconv.Atoi(idString)
+	var getRent models.Rent
+	err := c.Bind(&getRent)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, helpers.APIResponseFailed("id not recognise"))
+		c.JSON(http.StatusBadRequest, helpers.APIResponseFailed(err.Error()))
 	}
 
 	ctx := c.Request().Context()
-	rent, err := rc.rentService.GetRentById(ctx, id)
+	rent, err := rc.rentService.GetRentByLogin(ctx, idToken)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, helpers.APIResponseFailed(err.Error()))
 	}

@@ -39,7 +39,7 @@ func (uc *UserController) CreateUser(c echo.Context) error {
 
 func (uc *UserController) GetUserById(c echo.Context) error {
 
-	idString := c.Param("user_id")
+	idString := c.Param("userId")
 	id, err := strconv.Atoi(idString)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, helpers.APIResponseFailed("id not recognise"))

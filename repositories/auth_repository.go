@@ -22,10 +22,10 @@ func NewAuthRepository(db *sql.DB) *AuthRepository {
 }
 
 func (ar *AuthRepository) Login(ctx context.Context, email string) (models.LoginDataResponse, error) {
-	query := "SELECT userId, email, password FROM users WHERE email = ?"
+	query := "SELECT userId, name, email, password FROM users WHERE email = ?"
 
 	var user models.LoginDataResponse
-	err := ar.mysql.QueryRowContext(ctx, query, email).Scan(&user.UserId, &user.Email, &user.Password)
+	err := ar.mysql.QueryRowContext(ctx, query, email).Scan(&user.UserId, &user.Name, &user.Email, &user.Password)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return models.LoginDataResponse{}, errors.New("data not found")

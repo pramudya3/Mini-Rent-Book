@@ -8,7 +8,7 @@ import (
 
 type RentServiceInterface interface {
 	NewRent(ctx context.Context, newRent models.NewRent, idToken int) error
-	GetRentById(ctx context.Context, rentId int) (models.Rent, error)
+	GetRentByLogin(ctx context.Context, idToken int) (models.Rent, error)
 	GetAllRent(ctx context.Context) ([]models.Rent, error)
 	UpdateRent(ctx context.Context, updateRent models.UpdateRent, idToken int) (models.UpdateRent, error)
 }
@@ -28,13 +28,16 @@ func (rs *RentService) NewRent(ctx context.Context, newRent models.NewRent, idTo
 	return err
 }
 
-func (rs *RentService) GetRentById(ctx context.Context, rentId int) (models.Rent, error) {
-	rent, err := rs.rentRepository.GetRentById(ctx, rentId)
+func (rs *RentService) GetRentByLogin(ctx context.Context, idToken int) (models.Rent, error) {
+	rent, err := rs.rentRepository.GetRentByLogin(ctx, idToken)
 
 	rentResponse := models.Rent{
 		BookId:     rent.BookId,
 		UserId:     rent.UserId,
+		Title:      rent.Title,
+		Author:     rent.Author,
 		BorrowDate: rent.BorrowDate,
+		ReturnMax:  rent.ReturnMax,
 		ReturnDate: rent.ReturnDate,
 	}
 	return rentResponse, err

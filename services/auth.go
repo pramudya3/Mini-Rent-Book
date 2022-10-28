@@ -39,8 +39,9 @@ func (as *AuthService) Login(ctx context.Context, userLogin models.LoginRequest)
 	}
 
 	loginResponse := models.LoginResponse{
-		Token:  token,
 		UserId: user.UserId,
+		Name:   user.Name,
+		Token:  token,
 	}
 
 	return loginResponse, err

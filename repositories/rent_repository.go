@@ -10,7 +10,7 @@ import (
 
 type RentRepositoryInterface interface {
 	NewRent(ctx context.Context, rentBook models.NewRent, idToken int) error
-	GetRentById(ctx context.Context, rentId int) (models.Rent, error)
+	GetRentByLogin(ctx context.Context, rentId int) (models.Rent, error)
 	GetAllRent(ctx context.Context) ([]models.Rent, error)
 	UpdateRent(ctx context.Context, updateRent models.UpdateRent, idToken int) (models.UpdateRent, error)
 }
@@ -30,20 +30,20 @@ func (rr *RentRepository) NewRent(ctx context.Context, rentBook models.NewRent, 
 
 	borrowDate := time.Now()
 	timeBorrow := 72 * time.Hour
-	returnDate := borrowDate.Add(timeBorrow)
+	returnMax := borrowDate.Add(timeBorrow)
 
-	_, err := rr.mysql.ExecContext(ctx, query, rentBook.BookId, borrowDate, returnDate, idToken)
+	_, err := rr.mysql.ExecContext(ctx, query, rentBook.BookId, borrowDate, returnMax, idToken)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (rr *RentRepository) GetRentById(ctx context.Context, rentId int) (models.Rent, error) {
+func (rr *RentRepository) GetRentByLogin(ctx context.Context, idToken int) (models.Rent, error) {
 	var rent models.Rent
-	query := "SELECT bookId, userId, borrow_date, return_date WHERE userId = ?"
+	query := "SELECT userId, bookId, title, author, borrow_date, return_max WHERE userId = ?"
 
-	err := rr.mysql.QueryRowContext(ctx, query, rentId).Scan(&rent.BookId, &rent.UserId, &rent.BorrowDate, &rent.ReturnDate)
+	err := rr.mysql.QueryRowContext(ctx, query, idToken).Scan(&rent.UserId, &rent.BookId, &rent.Title, &rent.Author, &rent.BorrowDate, &rent.ReturnMax, idToken)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return models.Rent{}, errors.New("Data not found")
