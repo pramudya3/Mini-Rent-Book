@@ -40,26 +40,6 @@ func (bc *BookController) NewBook(c echo.Context) error {
 	return c.JSON(http.StatusOK, helpers.APIResponseSuccessWithoutData("succes add new book"))
 }
 
-func (bc *BookController) GetBookByIdLogin(c echo.Context) error {
-	idToken, errToken := middlewares.ExtractToken(c)
-	if errToken != nil {
-		return c.JSON(http.StatusUnauthorized, helpers.APIResponseFailed("unauthorized"))
-	}
-
-	idString := c.Param("bookId")
-	id, err := strconv.Atoi(idString)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, helpers.APIResponseFailed("BookId not found"))
-	}
-
-	ctx := c.Request().Context()
-	book, err := bc.bookService.GetBookByIdLogin(ctx, id, idToken)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, helpers.APIResponseFailed(err.Error()))
-	}
-	return c.JSON(http.StatusOK, helpers.APIResponseSuccess("success get book", book))
-}
-
 func (bc *BookController) GetBookById(c echo.Context) error {
 	idString := c.Param("bookId")
 	id, err := strconv.Atoi(idString)
@@ -96,24 +76,31 @@ func (bc *BookController) GetAllBook(c echo.Context) error {
 }
 
 func (bc *BookController) DeleteBook(c echo.Context) error {
+	idString := c.Param("bookId")
+	bookId, err := strconv.Atoi(idString)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, helpers.APIResponseFailed("BookId not found"))
+	}
+
 	idToken, errToken := middlewares.ExtractToken(c)
 	if errToken != nil {
 		return c.JSON(http.StatusUnauthorized, helpers.APIResponseFailed("unauthorized"))
 	}
 	ctx := c.Request().Context()
-	err := bc.bookService.DeleteBook(ctx, idToken)
+	errDelete := bc.bookService.DeleteBook(ctx, bookId, idToken)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, helpers.APIResponseFailed(err.Error()))
+		return c.JSON(http.StatusInternalServerError, helpers.APIResponseFailed(errDelete.Error()))
 	}
 	return c.JSON(http.StatusOK, helpers.APIResponseSuccessWithoutData("success delete book"))
 }
 
 func (bc *BookController) UpdateBook(c echo.Context) error {
 	idString := c.Param("bookId")
-	id, err := strconv.Atoi(idString)
+	bookId, err := strconv.Atoi(idString)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, helpers.APIResponseFailed("BookId not found"))
 	}
+
 	idToken, errToken := middlewares.ExtractToken(c)
 	if errToken != nil {
 		return c.JSON(http.StatusUnauthorized, helpers.APIResponseFailed("unauthorized"))
@@ -126,7 +113,7 @@ func (bc *BookController) UpdateBook(c echo.Context) error {
 	}
 
 	ctx := c.Request().Context()
-	book, err := bc.bookService.UpdateBook(ctx, updateBook, id, idToken)
+	book, err := bc.bookService.UpdateBook(ctx, updateBook, bookId, idToken)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, helpers.APIResponseFailed(err.Error()))
 	}

@@ -31,5 +31,5 @@ func (ac *AuthController) Login(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, helpers.APIResponseFailed(err.Error()))
 	}
-	return c.JSON(http.StatusOK, helpers.APIResponseSuccess(200, "succes login", loginResponse))
+	return c.JSON(http.StatusOK, helpers.APIResponseSuccess("succes login", loginResponse))
 }

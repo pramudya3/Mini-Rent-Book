@@ -21,7 +21,7 @@ func BookPath(e *echo.Echo, uc *controllers.BookController) {
 	e.GET("/book/:bookId", uc.GetBookById)
 	e.GET("/books/:title", uc.GetBookByTitle)
 	e.GET("/books", uc.GetAllBook)
-	e.DELETE("/book", uc.DeleteBook, middlewares.JWTMiddleware())
+	e.DELETE("/book/:bookId", uc.DeleteBook, middlewares.JWTMiddleware())
 	e.PUT("/book/:bookId", uc.UpdateBook, middlewares.JWTMiddleware())
 }
 

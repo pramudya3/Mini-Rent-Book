@@ -9,11 +9,10 @@ import (
 
 type BookServiceInterface interface {
 	NewBook(ctx context.Context, newBook models.NewBook, idToken int) error
-	GetBookByIdLogin(ctx context.Context, bookId int, idToken int) (models.BookResponse, error)
-	GetBookById(ctx context.Context, bookId int) (models.BookResponse, error)
+	GetBookById(ctx context.Context, bookId int) (models.Book, error)
 	GetBookByTitle(ctx context.Context, title string) (models.BookResponse, error)
 	GetAllBook(ctx context.Context) ([]models.Book, error)
-	DeleteBook(ctx context.Context, idToken int) error
+	DeleteBook(ctx context.Context, bookId int, idToken int) error
 	UpdateBook(ctx context.Context, updateBook models.NewBook, bookId int, idToken int) (models.Book, error)
 }
 
@@ -38,24 +37,14 @@ func (bs *BookService) NewBook(ctx context.Context, newBook models.NewBook, idTo
 	return err
 }
 
-func (bs *BookService) GetBookByIdLogin(ctx context.Context, bookId int, idToken int) (models.BookResponse, error) {
-	book, err := bs.bookRepository.GetBookByIdLogin(ctx, bookId, idToken)
-
-	bookResponse := models.BookResponse{
-		BookId: book.BookId,
-		Title:  book.Title,
-		Author: book.Author,
-	}
-	return bookResponse, err
-}
-
-func (bs *BookService) GetBookById(ctx context.Context, bookId int) (models.BookResponse, error) {
+func (bs *BookService) GetBookById(ctx context.Context, bookId int) (models.Book, error) {
 	book, err := bs.bookRepository.GetBookById(ctx, bookId)
 
-	bookResponse := models.BookResponse{
+	bookResponse := models.Book{
 		BookId: book.BookId,
 		Title:  book.Title,
 		Author: book.Author,
+		UserId: book.UserId,
 	}
 	return bookResponse, err
 }
@@ -76,14 +65,14 @@ func (bs *BookService) GetAllBook(ctx context.Context) ([]models.Book, error) {
 	return books, err
 }
 
-func (bs *BookService) DeleteBook(ctx context.Context, idToken int) error {
-	err := bs.bookRepository.DeleteBook(ctx, idToken)
+func (bs *BookService) DeleteBook(ctx context.Context, bookId int, idToken int) error {
+	err := bs.bookRepository.DeleteBook(ctx, bookId, idToken)
 	return err
 }
 
 func (bs *BookService) UpdateBook(ctx context.Context, updateBook models.NewBook, bookId int, idToken int) (models.Book, error) {
-	// getBook, err := bs.bookRepository.GetBookByIdLogin(ctx, bookId, idToken)
-	getBook, err := bs.bookRepository.GetBookByIdLogin(ctx, bookId, idToken)
+	getBook, err := bs.bookRepository.GetBookById(ctx, bookId)
+
 	if err != nil {
 		return models.Book{}, err
 	}
@@ -97,11 +86,10 @@ func (bs *BookService) UpdateBook(ctx context.Context, updateBook models.NewBook
 	book, err := bs.bookRepository.UpdateBook(ctx, getBook, bookId, idToken)
 
 	responseUpdate := models.Book{
-		BookId:        getBook.BookId,
-		Title:         book.Title,
-		Author:        book.Author,
-		AddedByUser:   getBook.AddedByUser,
-		UpdatedByUser: book.UpdatedByUser,
+		BookId: getBook.BookId,
+		Title:  book.Title,
+		Author: book.Author,
+		UserId: getBook.UserId,
 	}
 	return responseUpdate, err
 }

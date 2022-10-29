@@ -48,8 +48,8 @@ func (us *UserService) CreateUser(ctx context.Context, newUser models.NewUserReq
 	return err
 }
 
-func (us *UserService) GetUserById(ctx context.Context, userId int) (models.UserResponse, error) {
-	user, err := us.userRepository.GetUserById(ctx, userId)
+func (Us *UserService) GetUserById(ctx context.Context, userId int) (models.UserResponse, error) {
+	user, err := Us.userRepository.GetUserById(ctx, userId)
 
 	userResponse := models.UserResponse{
 		UserId:      user.UserId,
