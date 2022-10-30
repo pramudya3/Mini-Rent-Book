@@ -4,13 +4,13 @@ import (
 	"context"
 	"rent-book/models"
 	"rent-book/repositories"
+	"time"
 )
 
 type RentServiceInterface interface {
 	NewRent(ctx context.Context, newRent models.NewRent, idToken int) error
-	GetRentByLogin(ctx context.Context, idToken int) (models.Rent, error)
 	GetAllRent(ctx context.Context) ([]models.Rent, error)
-	UpdateRent(ctx context.Context, updateRent models.UpdateRent, idToken int) (models.UpdateRent, error)
+	UpdateRent(ctx context.Context, updateRent models.UpdateRent, rentId int, idToken int) (models.UpdateRent, error)
 }
 
 type RentService struct {
@@ -28,27 +28,16 @@ func (rs *RentService) NewRent(ctx context.Context, newRent models.NewRent, idTo
 	return err
 }
 
-func (rs *RentService) GetRentByLogin(ctx context.Context, idToken int) (models.Rent, error) {
-	rent, err := rs.rentRepository.GetRentByLogin(ctx, idToken)
-
-	rentResponse := models.Rent{
-		BookId:     rent.BookId,
-		UserId:     rent.UserId,
-		Title:      rent.Title,
-		Author:     rent.Author,
-		BorrowDate: rent.BorrowDate,
-		ReturnMax:  rent.ReturnMax,
-		ReturnDate: rent.ReturnDate,
-	}
-	return rentResponse, err
-}
-
 func (rs *RentService) GetAllRent(ctx context.Context) ([]models.Rent, error) {
 	rents, err := rs.rentRepository.GetAllRent(ctx)
 	return rents, err
 }
 
-func (rs *RentService) UpdateRent(ctx context.Context, updateRent models.UpdateRent, idToken int) (models.UpdateRent, error) {
-	rent, err := rs.rentRepository.UpdateRent(ctx, updateRent, idToken)
-	return rent, err
+func (rs *RentService) UpdateRent(ctx context.Context, updateRent models.UpdateRent, rentId int, idToken int) (models.UpdateRent, error) {
+	_, err := rs.rentRepository.UpdateRent(ctx, updateRent, rentId, idToken)
+
+	responseUpdate := models.UpdateRent{
+		ReturnDate: time.Now().Local(),
+	}
+	return responseUpdate, err
 }

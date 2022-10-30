@@ -10,9 +10,9 @@ import (
 
 type RentRepositoryInterface interface {
 	NewRent(ctx context.Context, rentBook models.NewRent, idToken int) error
-	GetRentByLogin(ctx context.Context, rentId int) (models.Rent, error)
+	GetRentByLogin(ctx context.Context, idToken int) (models.Rent, error)
 	GetAllRent(ctx context.Context) ([]models.Rent, error)
-	UpdateRent(ctx context.Context, updateRent models.UpdateRent, idToken int) (models.UpdateRent, error)
+	UpdateRent(ctx context.Context, updateRent models.UpdateRent, rentId int, idToken int) (models.UpdateRent, error)
 }
 
 type RentRepository struct {
@@ -26,10 +26,10 @@ func NewRentRepository(db *sql.DB) *RentRepository {
 }
 
 func (rr *RentRepository) NewRent(ctx context.Context, rentBook models.NewRent, idToken int) error {
-	query := "INSERT INTO rent(bookId, borrow_date, return_date, userId) VALUES (?, ?, ?, ?)"
+	query := "INSERT INTO rents(bookId, borrow_date, return_max, userId) VALUES (?, ?, ?, ?)"
 
 	borrowDate := time.Now()
-	timeBorrow := 72 * time.Hour
+	timeBorrow := 168 * time.Hour
 	returnMax := borrowDate.Add(timeBorrow)
 
 	_, err := rr.mysql.ExecContext(ctx, query, rentBook.BookId, borrowDate, returnMax, idToken)
@@ -41,9 +41,9 @@ func (rr *RentRepository) NewRent(ctx context.Context, rentBook models.NewRent, 
 
 func (rr *RentRepository) GetRentByLogin(ctx context.Context, idToken int) (models.Rent, error) {
 	var rent models.Rent
-	query := "SELECT userId, bookId, title, author, borrow_date, return_max WHERE userId = ?"
+	query := "SELECT rentId, rents.bookId, rents.borrow_date, rents.return_max, rents.return_date FROM rents WHERE userId = ?"
 
-	err := rr.mysql.QueryRowContext(ctx, query, idToken).Scan(&rent.UserId, &rent.BookId, &rent.Title, &rent.Author, &rent.BorrowDate, &rent.ReturnMax, idToken)
+	err := rr.mysql.QueryRowContext(ctx, query, idToken).Scan(&rent.RentId, &rent.BookId, &rent.BorrowDate, &rent.ReturnMax, &rent.ReturnDate, idToken)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return models.Rent{}, errors.New("Data not found")
@@ -54,7 +54,7 @@ func (rr *RentRepository) GetRentByLogin(ctx context.Context, idToken int) (mode
 }
 
 func (rr *RentRepository) GetAllRent(ctx context.Context) ([]models.Rent, error) {
-	query := "SELECT bookId, UserId, borrow_date, return_date from rent"
+	query := "SELECT rentId, rents.userId, rents.bookId, rents.borrow_date, rents.return_max FROM rents"
 
 	rows, err := rr.mysql.QueryContext(ctx, query)
 	if err != nil {
@@ -65,7 +65,7 @@ func (rr *RentRepository) GetAllRent(ctx context.Context) ([]models.Rent, error)
 	var rents []models.Rent
 	for rows.Next() {
 		var rent models.Rent
-		err := rows.Scan(&rent.UserId, &rent.BookId, &rent.BorrowDate, &rent.ReturnDate)
+		err := rows.Scan(&rent.RentId, &rent.UserId, &rent.BookId, &rent.BorrowDate, &rent.ReturnMax)
 		if err != nil {
 			return nil, err
 		}
@@ -74,10 +74,10 @@ func (rr *RentRepository) GetAllRent(ctx context.Context) ([]models.Rent, error)
 	return rents, nil
 }
 
-func (rr *RentRepository) UpdateRent(ctx context.Context, updateRent models.UpdateRent, idToken int) (models.UpdateRent, error) {
-	query := "UPDATE rent SET return_date = ? WHERE userId = ?"
+func (rr *RentRepository) UpdateRent(ctx context.Context, updateRent models.UpdateRent, rentId int, idToken int) (models.UpdateRent, error) {
+	query := "UPDATE rents SET return_date = current_timestamp where rentId = ? AND userId =?"
 
-	result, err := rr.mysql.ExecContext(ctx, query, updateRent.ReturnDate, idToken)
+	result, err := rr.mysql.ExecContext(ctx, query, rentId, idToken)
 	if err != nil {
 		return models.UpdateRent{}, err
 	}
