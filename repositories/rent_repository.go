@@ -28,7 +28,7 @@ func NewRentRepository(db *sql.DB) *RentRepository {
 func (rr *RentRepository) NewRent(ctx context.Context, rentBook models.NewRent, idToken int) error {
 	query := "INSERT INTO rents(bookId, borrow_date, return_max, userId) VALUES (?, ?, ?, ?)"
 
-	borrowDate := time.Now()
+	borrowDate := time.Now().Local()
 	timeBorrow := 168 * time.Hour
 	returnMax := borrowDate.Add(timeBorrow)
 
