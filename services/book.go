@@ -10,7 +10,6 @@ import (
 type BookServiceInterface interface {
 	NewBook(ctx context.Context, newBook models.NewBook, idToken int) error
 	GetBookById(ctx context.Context, bookId int) (models.Book, error)
-	GetBookByTitle(ctx context.Context, title string) (models.BookResponse, error)
 	GetAllBook(ctx context.Context) ([]models.Book, error)
 	DeleteBook(ctx context.Context, bookId int, idToken int) error
 	UpdateBook(ctx context.Context, updateBook models.NewBook, bookId int, idToken int) (models.Book, error)
@@ -45,17 +44,6 @@ func (bs *BookService) GetBookById(ctx context.Context, bookId int) (models.Book
 		Title:  book.Title,
 		Author: book.Author,
 		UserId: book.UserId,
-	}
-	return bookResponse, err
-}
-
-func (bs *BookService) GetBookByTitle(ctx context.Context, title string) (models.BookResponse, error) {
-	book, err := bs.bookRepository.GetBookByTitle(ctx, title)
-
-	bookResponse := models.BookResponse{
-		BookId: book.BookId,
-		Title:  book.Title,
-		Author: book.Author,
 	}
 	return bookResponse, err
 }

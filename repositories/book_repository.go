@@ -10,7 +10,6 @@ import (
 type BookRepositoryInterface interface {
 	NewBook(ctx context.Context, newBook models.NewBook, idToken int) error
 	GetBookById(ctx context.Context, bookId int) (models.Book, error)
-	GetBookByTitle(ctx context.Context, title string) (models.Book, error)
 	GetAllBook(ctx context.Context) ([]models.Book, error)
 	DeleteBook(ctx context.Context, bookId int, idToken int) error
 	UpdateBook(ctx context.Context, updateBook models.Book, bookId int, idToken int) (models.Book, error)
@@ -42,20 +41,6 @@ func (br *BookRepository) GetBookById(ctx context.Context, bookId int) (models.B
 	query := "SELECT bookId, title, author, userId FROM books WHERE bookId = ?"
 
 	err := br.mysql.QueryRowContext(ctx, query, bookId).Scan(&book.BookId, &book.Title, &book.Author, &book.UserId)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return models.Book{}, err
-		}
-		return models.Book{}, err
-	}
-	return book, nil
-}
-
-func (br *BookRepository) GetBookByTitle(ctx context.Context, title string) (models.Book, error) {
-	var book models.Book
-	query := "SELECT bookId, title, author FROM books WHERE title = ?"
-
-	err := br.mysql.QueryRowContext(ctx, query, title).Scan(&book.BookId, &book.Title, &book.Author)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return models.Book{}, err

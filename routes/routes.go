@@ -19,7 +19,6 @@ func UserPath(e *echo.Echo, uc *controllers.UserController) {
 func BookPath(e *echo.Echo, uc *controllers.BookController) {
 	e.POST("/books", uc.NewBook, middlewares.JWTMiddleware())
 	e.GET("/books/:bookId", uc.GetBookById)
-	e.GET("/books/:title", uc.GetBookByTitle)
 	e.GET("/books", uc.GetAllBook)
 	e.DELETE("/books/:bookId", uc.DeleteBook, middlewares.JWTMiddleware())
 	e.PUT("/books/:bookId", uc.UpdateBook, middlewares.JWTMiddleware())

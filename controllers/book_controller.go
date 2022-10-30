@@ -55,17 +55,6 @@ func (bc *BookController) GetBookById(c echo.Context) error {
 	return c.JSON(http.StatusOK, helpers.APIResponseSuccess("success get book by id", book))
 }
 
-func (bc *BookController) GetBookByTitle(c echo.Context) error {
-	title := c.Param("title")
-
-	ctx := c.Request().Context()
-	book, err := bc.bookService.GetBookByTitle(ctx, title)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, helpers.APIResponseFailed(err.Error()))
-	}
-	return c.JSON(http.StatusOK, helpers.APIResponseSuccess("success get book by title", book))
-}
-
 func (bc *BookController) GetAllBook(c echo.Context) error {
 	ctx := c.Request().Context()
 	books, err := bc.bookService.GetAllBook(ctx)
