@@ -42,7 +42,7 @@ func (uc *UserController) GetUserById(c echo.Context) error {
 	idString := c.Param("userId")
 	id, err := strconv.Atoi(idString)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, helpers.APIResponseFailed("id not recognise"))
+		return c.JSON(http.StatusInternalServerError, helpers.APIResponseFailed("id not recognize"))
 	}
 
 	ctx := c.Request().Context()
@@ -51,7 +51,7 @@ func (uc *UserController) GetUserById(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, helpers.APIResponseFailed(err.Error()))
 	}
 
-	return c.JSON(http.StatusOK, helpers.APIResponseSuccess("succes get user", user))
+	return c.JSON(http.StatusOK, helpers.APIResponseSuccess("success get user by id", user))
 }
 
 func (uc *UserController) GetAllUser(c echo.Context) error {
@@ -99,5 +99,5 @@ func (uc *UserController) UpdateUser(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, helpers.APIResponseFailed(err.Error()))
 	}
 
-	return c.JSON(http.StatusOK, helpers.APIResponseSuccess("success to update user", user))
+	return c.JSON(http.StatusOK, helpers.APIResponseSuccess("success update user", user))
 }

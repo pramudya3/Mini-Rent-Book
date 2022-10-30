@@ -37,7 +37,7 @@ func (bc *BookController) NewBook(c echo.Context) error {
 	if errNewBook != nil {
 		return c.JSON(http.StatusInternalServerError, helpers.APIResponseFailed(errNewBook.Error()))
 	}
-	return c.JSON(http.StatusOK, helpers.APIResponseSuccessWithoutData("succes add new book"))
+	return c.JSON(http.StatusOK, helpers.APIResponseSuccessWithoutData("succes add a new book"))
 }
 
 func (bc *BookController) GetBookById(c echo.Context) error {
@@ -52,7 +52,7 @@ func (bc *BookController) GetBookById(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, helpers.APIResponseFailed(err.Error()))
 	}
-	return c.JSON(http.StatusOK, helpers.APIResponseSuccess("success get book", book))
+	return c.JSON(http.StatusOK, helpers.APIResponseSuccess("success get book by id", book))
 }
 
 func (bc *BookController) GetBookByTitle(c echo.Context) error {
@@ -91,7 +91,7 @@ func (bc *BookController) DeleteBook(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, helpers.APIResponseFailed(errDelete.Error()))
 	}
-	return c.JSON(http.StatusOK, helpers.APIResponseSuccessWithoutData("success delete book"))
+	return c.JSON(http.StatusOK, helpers.APIResponseSuccessWithoutData("success delete a book"))
 }
 
 func (bc *BookController) UpdateBook(c echo.Context) error {
