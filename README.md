@@ -1,5 +1,5 @@
 # Rent-Book-App
-Adalah sebuah project untuk sewa menyewa buku, dengan menggunakan bahasa GO dan echo framework
+Adalah sebuah mini project RestAPI untuk sewa menyewa buku, dengan menggunakan bahasa GO dan echo framework
 
 # DokumentasiAPI
 
